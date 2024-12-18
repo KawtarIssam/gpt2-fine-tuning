@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title></title>
+    <style>
+        /* Style for the entire page */
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh; /* Full-screen height */
+            margin: 0; /* Remove default margin */
+            background-color: #F5F5F5; /* Light gray background */
+        }
+
+        /* Style for the chatbot container */
+        .chatbot-container {
+            border: 2px solid #007F3E; /* Schneider green border */
+            padding: 20px;
+            border-radius: 10px;
+            width: 400px;
+            text-align: center;
+            box-shadow: 2px 2px 15px rgba(0, 0, 0, 0.1); /* Light shadow */
+            background-color: #FFFFFF; /* White background */
+            position: relative;
+        }
+
+        /* Bot sticker */
+        .bot-sticker {
+    width: 80px; /* Smaller width */
+    height: 50px; /* Smaller height */
+    position: absolute;
+    top: -25px; /* Adjust positioning to align */
+    left: calc(50% - 40px); /* Re-center based on new width */
+    background: url('https://www.se.com/ww/en/assets/wiztopic/6377672a9a2b2dda9503c02d/SE-logo-Life-is-On-png_original.jpg') no-repeat center center;
+    background-size: contain; /* Ensure full image is visible */
+    border-radius: 5px; /* Slightly rounded corners */
+    border: 2px solid #FFFFFF; /* Optional smaller white border */
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2); /* Adjust shadow for a smaller look */
+    background-color: #FFFFFF; /* Optional white background for clarity */
+}
+
+
+
+        /* Style for the chatbot title */
+        h1 {
+            font-size: 24px;
+            color: #007F3E; /* Schneider green text */
+            margin-bottom: 20px;
+            font-family: 'Shadows Into Light', sans-serif;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
+            letter-spacing: 2px;
+        }
+
+        /* Style for input fields and buttons */
+        input, button {
+            padding: 10px;
+            font-size: 16px;
+            margin: 10px 0;
+            width: calc(100% - 20px); /* Full width minus padding */
+            border: 1px solid #ccc; /* Light gray border */
+            border-radius: 7px;
+        }
+
+        input {
+            border: 1px solid #007F3E; /* Schneider green border */
+        }
+
+        button {
+            background-color: #007F3E; 
+            color: #FFFFFF; 
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #005F2C; 
+        }
+
+        #response {
+            margin-top: 20px;
+            font-size: 18px;
+            color: #333; 
+        }
+    </style>
+</head>
+<body>
+    <!-- Chatbot container -->
+    <div class="chatbot-container">
+        <div class="bot-sticker"></div>
+        <h1></h1>
+        <input type="text" id="userQuery" placeholder="Enter your query">
+        <button onclick="getPrediction()">Submit</button>
+        <div id="response"></div>
+    </div>
+
+    <script>
+        // Function to fetch predictions from the backend
+        async function getPrediction() {
+            const query = document.getElementById('userQuery').value;
+
+            // Handle empty input
+            if (!query) {
+                document.getElementById('response').innerText = "Please enter a query.";
+                return;
+            }
+
+            try {
+                // Send request to the backend
+                const response = await fetch('http://127.0.0.1:5000/predict', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ text: query }),
+                });
+
+                // Process response from the backend
+                const data = await response.json();
+                if (data.predicted_intent) {
+                    document.getElementById('response').innerText = `Predicted Intent: ${data.predicted_intent}`;
+                } else {
+                    document.getElementById('response').innerText = "Error: Could not predict intent.";
+                }
+            } catch (error) {
+                // Handle errors during the fetch request
+                document.getElementById('response').innerText = "Error: Unable to connect to the server.";
+                console.error(error);
+            }
+        }
+    </script>
+</body>
+</html>
